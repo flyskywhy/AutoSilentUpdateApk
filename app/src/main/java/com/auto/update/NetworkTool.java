@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 public class NetworkTool {
 
     /**
-     * 获取网址内容
+     * Get content from URL
      *
      * @param url
      * @return
@@ -25,7 +25,7 @@ public class NetworkTool {
 
         HttpClient client = new DefaultHttpClient();
         HttpParams httpParams = client.getParams();
-        //设置网络超时参数
+        // set net timeout
         HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
         HttpConnectionParams.setSoTimeout(httpParams, 5000);
         HttpResponse response = client.execute(new HttpGet(url));

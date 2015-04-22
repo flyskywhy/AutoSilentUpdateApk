@@ -1,16 +1,15 @@
 package com.auto.update;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.IPackageInstallObserver;
+import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,36 +25,31 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.flyskywhy.update.R;
-
-public class VersionUpdate extends Activity {
+public class VersionUpdate {
     private static final String TAG = "Update";
     public ProgressDialog pBar;
     private Handler handler = new Handler();
+    private Context ctx;
 
     private int newVerCode = 0;
     private String newVerName = "";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-
+    public VersionUpdate(Context context) {
+        ctx = context;
         if (getServerVerCode()) {
-            int vercode = Config.getVerCode(this);
+            int vercode = Config.getVerCode(context);
             if (newVerCode > vercode) {
                 doNewVersionUpdate();
             } else {
                 notNewVersionShow();
             }
         }
-
     }
 
     private boolean getServerVerCode() {
         try {
-            String verjson = NetworkTool.getContent(Config.UPDATE_SERVER
-                    + Config.UPDATE_VERJSON);
+            String verjson = NetworkTool.getContent(Config.updateServer
+                    + Config.updateVerjson);
             JSONArray array = new JSONArray(verjson);
             if (array.length() > 0) {
                 JSONObject obj = array.getJSONObject(0);
@@ -76,33 +70,20 @@ public class VersionUpdate extends Activity {
     }
 
     private void notNewVersionShow() {
-        int verCode = Config.getVerCode(this);
-        String verName = Config.getVerName(this);
-        StringBuffer sb = new StringBuffer();
-        sb.append("当前版本:");
-        sb.append(verName);
-        sb.append(" Code:");
-        sb.append(verCode);
-        sb.append(",\n已是最新版,无需更新!");
-        Dialog dialog = new AlertDialog.Builder(VersionUpdate.this)
-                .setTitle("软件更新").setMessage(sb.toString())// 设置内容
-                .setPositiveButton("确定",// 设置确定按钮
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                finish();
-                            }
-
-                        }).create();// 创建
-        // 显示对话框
-        dialog.show();
+//        int verCode = Config.getVerCode(ctx);
+//        String verName = Config.getVerName(ctx);
+//        StringBuffer sb = new StringBuffer();
+//        sb.append("当前版本:");
+//        sb.append(verName);
+//        sb.append(" Code:");
+//        sb.append(verCode);
+//        sb.append(",\n已是最新版,无需更新!");
+//        Toast.makeText(ctx, sb.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void doNewVersionUpdate() {
-        int verCode = Config.getVerCode(this);
-        String verName = Config.getVerName(this);
+        int verCode = Config.getVerCode(ctx);
+        String verName = Config.getVerName(ctx);
         StringBuffer sb = new StringBuffer();
         sb.append("当前版本:");
         sb.append(verName);
@@ -112,36 +93,13 @@ public class VersionUpdate extends Activity {
         sb.append(newVerName);
         sb.append(" Code:");
         sb.append(newVerCode);
-        sb.append(", 是否更新?");
-        Dialog dialog = new AlertDialog.Builder(VersionUpdate.this)
-                .setTitle("软件更新")
-                .setMessage(sb.toString())
-                        // 设置内容
-                .setPositiveButton("更新",// 设置确定按钮
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                pBar = new ProgressDialog(VersionUpdate.this);
-                                pBar.setTitle("正在下载");
-                                pBar.setMessage("请稍候...");
-                                pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                                downFile(Config.UPDATE_SERVER
-                                        + Config.UPDATE_APKNAME);
-                            }
-
-                        })
-                .setNegativeButton("暂不更新",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,
-                                                int whichButton) {
-                                // 点击"取消"按钮之后退出程序
-                                finish();
-                            }
-                        }).create();// 创建
-        // 显示对话框
-        dialog.show();
+        Toast.makeText(ctx, sb.toString(), Toast.LENGTH_SHORT).show();
+        pBar = new ProgressDialog(ctx);
+        pBar.setTitle("正在下载 " + Config.updateApkname + " " + verName);
+        pBar.setMessage("请稍候...");
+        pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        downFile(Config.updateServer
+                + Config.updateApkname);
     }
 
     void downFile(final String url) {
@@ -161,7 +119,7 @@ public class VersionUpdate extends Activity {
 
                         File file = new File(
                                 Environment.getExternalStorageDirectory(),
-                                Config.UPDATE_SAVENAME);
+                                Config.updateSavename);
                         fileOutputStream = new FileOutputStream(file);
 
                         byte[] buf = new byte[1024];
@@ -202,12 +160,38 @@ public class VersionUpdate extends Activity {
     }
 
     void update() {
+        PackageManager pm = ctx.getPackageManager();
+        File file = new File(Environment.getExternalStorageDirectory(),
+                Config.updateSavename);
+        MyPakcageInstallObserver observer = new MyPakcageInstallObserver();
+        observer.setCx(ctx);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(Environment
-                        .getExternalStorageDirectory(), Config.UPDATE_SAVENAME)),
-                "application/vnd.android.package-archive");
-        startActivity(intent);
+        pm.installPackage(Uri.fromFile(file), observer, PackageManager.INSTALL_REPLACE_EXISTING
+                , Config.updatePackagename
+        );
+
+//		Intent intent = new Intent(Intent.ACTION_VIEW);
+//		intent.setDataAndType(Uri.fromFile(new File(Environment
+//				.getExternalStorageDirectory(), Config.updateSavename)),
+//				"application/vnd.android.package-archive");
+//		startActivity(intent);
     }
 
+    private static class MyPakcageInstallObserver extends IPackageInstallObserver.Stub {
+        private Context ctx;
+
+        public void setCx(Context cx) {
+            this.ctx = cx;
+        }
+
+        @Override
+        public void packageInstalled(String packageName, int returnCode)
+                throws android.os.RemoteException {
+            Intent intent = ctx.getPackageManager().getLaunchIntentForPackage(packageName);
+            if (intent != null) {
+                ctx.startActivity(intent);
+            }
+            Log.i(TAG, "returnCode = " + returnCode);   // return 1 means success
+        }
+    }
 }
