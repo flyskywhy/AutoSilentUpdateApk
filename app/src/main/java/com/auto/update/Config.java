@@ -1,8 +1,10 @@
-package jtapp.updateapksamples;
+package com.auto.update;
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
+
+import com.flyskywhy.update.R;
 
 public class Config {
     public static final String UPDATE_SERVER = "http://10.20.147.117/jtapp12/";

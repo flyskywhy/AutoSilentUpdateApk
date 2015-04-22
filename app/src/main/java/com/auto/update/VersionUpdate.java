@@ -1,4 +1,4 @@
-package jtapp.updateapksamples;
+package com.auto.update;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,7 +26,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class UpdateActivity extends Activity {
+import com.flyskywhy.update.R;
+
+public class VersionUpdate extends Activity {
     private static final String TAG = "Update";
     public ProgressDialog pBar;
     private Handler handler = new Handler();
@@ -82,7 +84,7 @@ public class UpdateActivity extends Activity {
         sb.append(" Code:");
         sb.append(verCode);
         sb.append(",\n已是最新版,无需更新!");
-        Dialog dialog = new AlertDialog.Builder(UpdateActivity.this)
+        Dialog dialog = new AlertDialog.Builder(VersionUpdate.this)
                 .setTitle("软件更新").setMessage(sb.toString())// 设置内容
                 .setPositiveButton("确定",// 设置确定按钮
                         new DialogInterface.OnClickListener() {
@@ -111,7 +113,7 @@ public class UpdateActivity extends Activity {
         sb.append(" Code:");
         sb.append(newVerCode);
         sb.append(", 是否更新?");
-        Dialog dialog = new AlertDialog.Builder(UpdateActivity.this)
+        Dialog dialog = new AlertDialog.Builder(VersionUpdate.this)
                 .setTitle("软件更新")
                 .setMessage(sb.toString())
                         // 设置内容
@@ -121,7 +123,7 @@ public class UpdateActivity extends Activity {
                             @Override
                             public void onClick(DialogInterface dialog,
                                                 int which) {
-                                pBar = new ProgressDialog(UpdateActivity.this);
+                                pBar = new ProgressDialog(VersionUpdate.this);
                                 pBar.setTitle("正在下载");
                                 pBar.setMessage("请稍候...");
                                 pBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);

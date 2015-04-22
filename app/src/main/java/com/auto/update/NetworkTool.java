@@ -1,4 +1,4 @@
-package jtapp.updateapksamples;
+package com.auto.update;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

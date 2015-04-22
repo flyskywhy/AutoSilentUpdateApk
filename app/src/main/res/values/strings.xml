@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, UpdateActivity!</string>
-    <string name="app_name">jtapp12.updateapksamples</string>
+    <string name="hello">Hello World, AutoUpdate!</string>
+    <string name="app_name">com.flyskywhy.update</string>
 </resources>
