@@ -187,11 +187,12 @@ public class VersionUpdate {
         @Override
         public void packageInstalled(String packageName, int returnCode)
                 throws android.os.RemoteException {
-            Intent intent = ctx.getPackageManager().getLaunchIntentForPackage(packageName);
-            if (intent != null) {
-                ctx.startActivity(intent);
+            if (1 == returnCode) {
+                Intent intent = ctx.getPackageManager().getLaunchIntentForPackage(packageName);
+                if (intent != null) {
+                    ctx.startActivity(intent);
+                }
             }
-            Log.i(TAG, "returnCode = " + returnCode);   // return 1 means success
         }
     }
 }
