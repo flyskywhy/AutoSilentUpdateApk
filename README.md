@@ -32,6 +32,8 @@ Because AutoUpdate need system permission, so you need put your apk into `/syste
     java -jar signapk.jar platform.x509.pem platform.pk8 YourApp-release-unsigned.apk YourApp-release-signed.apk
     zipalign -f 4 YourApp-release-signed.apk YourApp-release-signed-aligned.apk
 
+ps: `YourApp-release-unsigned.apk` comes from double-click `assemble` in the right dock bar of Android Studio named `Gradle`.
+
 ## Update your App
 
 * Increase versionCode and versionName in AndroidManifest.xml, then generate the apk.
