@@ -34,6 +34,8 @@ Because AutoUpdate need system permission, so you need put your apk into `/syste
 
 ps: `YourApp-release-unsigned.apk` comes from double-click `assemble` in the right dock bar of Android Studio named `Gradle`.
 
+ps: If there's a .so file in apk, but your App can't find it, here is the solution: push a apk with smaller `android:versionCode` in `AndroidManifest.xml` to  `/system/app/` , then upgrade the App with a bigger `android:versionCode` one.
+
 ## Update your App
 
 * Increase versionCode and versionName in AndroidManifest.xml, then generate the apk.
